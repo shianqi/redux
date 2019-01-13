@@ -4,6 +4,9 @@ import ActionTypes from './utils/actionTypes'
 import isPlainObject from './utils/isPlainObject'
 
 /**
+ * enhancer 如何实现高级功能
+ * combineReducers 做了什么
+ *
  * Creates a Redux store that holds the state tree.
  * The only way to change the data in the store is to call `dispatch()` on it.
  *
@@ -19,16 +22,19 @@ import isPlainObject from './utils/isPlainObject'
  * previously serialized user session.
  * If you use `combineReducers` to produce the root reducer function, this must be
  * an object with the same shape as `combineReducers` keys.
+ * 初始状态
  *
  * @param {Function} [enhancer] The store enhancer. You may optionally specify it
  * to enhance the store with third-party capabilities such as middleware,
  * time travel, persistence, etc. The only store enhancer that ships with Redux
  * is `applyMiddleware()`.
+ * 增强器
  *
  * @returns {Store} A Redux store that lets you read the state, dispatch actions
  * and subscribe to changes.
  */
 export default function createStore(reducer, preloadedState, enhancer) {
+  // 检查 enhancer 是否合法
   if (
     (typeof preloadedState === 'function' && typeof enhancer === 'function') ||
     (typeof enhancer === 'function' && typeof arguments[3] === 'function')
@@ -40,25 +46,32 @@ export default function createStore(reducer, preloadedState, enhancer) {
     )
   }
 
+  // 处理不传入 preloadedState
   if (typeof preloadedState === 'function' && typeof enhancer === 'undefined') {
     enhancer = preloadedState
     preloadedState = undefined
   }
 
+  // 如果有 enhancer
   if (typeof enhancer !== 'undefined') {
+    // 检查 enhancer
     if (typeof enhancer !== 'function') {
       throw new Error('Expected the enhancer to be a function.')
     }
 
+    // 使用 enhancer 处理
     return enhancer(createStore)(reducer, preloadedState)
   }
 
+  // 检查 reducer
   if (typeof reducer !== 'function') {
     throw new Error('Expected the reducer to be a function.')
   }
 
   let currentReducer = reducer
   let currentState = preloadedState
+
+  // ?
   let currentListeners = []
   let nextListeners = currentListeners
   let isDispatching = false
@@ -71,6 +84,7 @@ export default function createStore(reducer, preloadedState, enhancer) {
 
   /**
    * Reads the state tree managed by the store.
+   * 从 stroe 中读 state
    *
    * @returns {any} The current state tree of your application.
    */

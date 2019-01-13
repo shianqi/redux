@@ -19,6 +19,7 @@ import compose from './compose'
 export default function applyMiddleware(...middlewares) {
   return createStore => (...args) => {
     const store = createStore(...args)
+    // 中间件构建阶段不能使用 dispatch
     let dispatch = () => {
       throw new Error(
         `Dispatching while constructing your middleware is not allowed. ` +
@@ -31,6 +32,7 @@ export default function applyMiddleware(...middlewares) {
       dispatch: (...args) => dispatch(...args)
     }
     const chain = middlewares.map(middleware => middleware(middlewareAPI))
+    // 增强 dispatch 函数
     dispatch = compose(...chain)(store.dispatch)
 
     return {

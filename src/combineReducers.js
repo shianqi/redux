@@ -67,6 +67,7 @@ function assertReducerShape(reducers) {
     const reducer = reducers[key]
     const initialState = reducer(undefined, { type: ActionTypes.INIT })
 
+    // 判断是否给了默认值
     if (typeof initialState === 'undefined') {
       throw new Error(
         `Reducer "${key}" returned undefined during initialization. ` +
@@ -77,6 +78,7 @@ function assertReducerShape(reducers) {
       )
     }
 
+    // 判断是否处理意料之外的 action
     if (
       typeof reducer(undefined, {
         type: ActionTypes.PROBE_UNKNOWN_ACTION()
@@ -128,8 +130,10 @@ export default function combineReducers(reducers) {
       finalReducers[key] = reducers[key]
     }
   }
+  // 过滤全部非函数
   const finalReducerKeys = Object.keys(finalReducers)
 
+  // 缓存意外Key
   let unexpectedKeyCache
   if (process.env.NODE_ENV !== 'production') {
     unexpectedKeyCache = {}
@@ -137,6 +141,7 @@ export default function combineReducers(reducers) {
 
   let shapeAssertionError
   try {
+    // 判断 reducers 中所有 reducer 是否满足要求
     assertReducerShape(finalReducers)
   } catch (e) {
     shapeAssertionError = e
@@ -161,6 +166,7 @@ export default function combineReducers(reducers) {
 
     let hasChanged = false
     const nextState = {}
+
     for (let i = 0; i < finalReducerKeys.length; i++) {
       const key = finalReducerKeys[i]
       const reducer = finalReducers[key]
@@ -173,6 +179,7 @@ export default function combineReducers(reducers) {
       nextState[key] = nextStateForKey
       hasChanged = hasChanged || nextStateForKey !== previousStateForKey
     }
+    // 状态没有改变返回原状态对象
     return hasChanged ? nextState : state
   }
 }

@@ -1,5 +1,6 @@
 function bindActionCreator(actionCreator, dispatch) {
   return function() {
+    // 核心函数
     return dispatch(actionCreator.apply(this, arguments))
   }
 }

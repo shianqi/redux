@@ -17,6 +17,6 @@ export default function compose(...funcs) {
   if (funcs.length === 1) {
     return funcs[0]
   }
-
+  // 调用顺序从后向前
   return funcs.reduce((a, b) => (...args) => a(b(...args)))
 }
